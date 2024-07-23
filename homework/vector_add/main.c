@@ -88,13 +88,23 @@ int main(int argc, char *argv[])
     // Create the compute kernel in the program we wish to run
     kernel = clCreateKernel(program, "vectorAdd", &err);
     CHECK_ERR(err, "clCreateKernel");
-
+    // Declare size of vector A/B
+    size_t size_a = sizeof(float) * host_a.shape[0] * host_a.shape[1];
+    size_t size_b = sizeof(float) * host_b.shape[0] * host_b.shape[1];
     //@@ Allocate GPU memory here
-
+    cl_mem device_a = clCreateBuffer(context,CL_MEM_READ_WRITE, size_a, NULL, &err );
+    CHECK_ERR(err, "clCreateBuffer device a");
+    cl_mem device_b = clCreateBuffer(context,CL_MEM_READ_WRITE, size_b, NULL, &err );
+    CHECK_ERR(err, "clCreateBuffer device b");
+    cl_mem device_c = clCreateBuffer(context,CL_MEM_READ_WRITE, size_a, NULL, &err );
+    CHECK_ERR(err, "clCreateBuffer device c");
     //@@ Copy memory to the GPU here
-
+    err = clEnqueueWriteBuffer(queue, device_a, CL_TRUE ,0, size_a, host_a, 0, NULL, NULL)
+    CHECK_ERR(err, "clEnqueueWriteBuffer device a");
+    err = clEnqueueWriteBuffer(queue, device_b, CL_TRUE ,0, size_b, host_b, 0, NULL, NULL)
+    CHECK_ERR(err, "clEnqueueWriteBuffer device a");
     // Set the arguments to our compute kernel
-    unsigned int size_a = host_a.shape[0] * host_a.shape[1];
+    
     err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &device_a);
     CHECK_ERR(err, "clSetKernelArg 0");
     err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &device_b);
@@ -105,6 +115,8 @@ int main(int argc, char *argv[])
     CHECK_ERR(err, "clSetKernelArg 3");
 
     //@@ Initialize the global size and local size here
+    size_t global_work_size[];
+    size_t local_work_size[];
 
     //@@ Launch the GPU Kernel here
 
