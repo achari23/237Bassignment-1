@@ -92,16 +92,16 @@ int main(int argc, char *argv[])
     size_t size_a = sizeof(float) * host_a.shape[0] * host_a.shape[1];
     size_t size_b = sizeof(float) * host_b.shape[0] * host_b.shape[1];
     //@@ Allocate GPU memory here
-    device_a = clCreateBuffer(context,CL_MEM_WRITE_ONLY, size_a, NULL, &err );
+    device_a = clCreateBuffer(context,CL_MEM_READ_ONLY, size_a, NULL, &err );
     CHECK_ERR(err, "clCreateBuffer device a");
-    device_b = clCreateBuffer(context,CL_MEM_WRITE_ONLY, size_b, NULL, &err );
+    device_b = clCreateBuffer(context,CL_MEM_READ_ONLY, size_b, NULL, &err );
     CHECK_ERR(err, "clCreateBuffer device b");
-    device_c = clCreateBuffer(context,CL_MEM_READ_ONLY, size_a, NULL, &err );
+    device_c = clCreateBuffer(context,CL_MEM_WRITE_ONLY, size_a, NULL, &err );
     CHECK_ERR(err, "clCreateBuffer device c");
     //@@ Copy memory to the GPU here
-    err = clEnqueueWriteBuffer(queue, device_a, CL_FALSE ,0, size_a, host_a.data, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(queue, device_a, CL_TRUE ,0, size_a, host_a.data, 0, NULL, NULL);
     CHECK_ERR(err, "clEnqueueWriteBuffer device a");
-    err = clEnqueueWriteBuffer(queue, device_b, CL_FALSE,0, size_b, host_b.data, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(queue, device_b, CL_TRUE,0, size_b, host_b.data, 0, NULL, NULL);
     CHECK_ERR(err, "clEnqueueWriteBuffer device b");
     // Set the arguments to our compute kernel
     
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_item_size, &local_item_size,0, NULL, NULL);
     CHECK_ERR(err, "clEnqueueNDRangeKernel");
     //@@ Copy the GPU memory back to the CPU here
-    err = clEnqueueReadBuffer(queue, device_b, CL_FALSE ,0, size_a, host_c.data, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(queue, device_c, CL_TRUE ,0, size_a, host_c.data, 0, NULL, NULL);
     CHECK_ERR(err, "clEnqueueReadBuffer device c");
     // Prints the results
     for (unsigned int i = 0; i < host_c.shape[0] * host_c.shape[1]; i++)
