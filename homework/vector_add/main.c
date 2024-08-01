@@ -122,13 +122,13 @@ int main(int argc, char *argv[])
     err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_item_size, &local_item_size,0, NULL, NULL);
     CHECK_ERR(err, "clEnqueueNDRangeKernel");
     //@@ Copy the GPU memory back to the CPU here
-    err = clEnqueueReadBuffer(queue, device_c, CL_FALSE ,0, size_a, host_c.data, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(queue, device_b, CL_FALSE ,0, size_a, host_c.data, 0, NULL, NULL);
     CHECK_ERR(err, "clEnqueueReadBuffer device c");
     // Prints the results
-    //for (unsigned int i = 0; i < host_c.shape[0] * host_c.shape[1]; i++)
-    //{
-     //   printf("C[%u]: %f == %f\n", i, host_c.data[i], host_a.data[i] + host_b.data[i]);
-    //}
+    for (unsigned int i = 0; i < host_c.shape[0] * host_c.shape[1]; i++)
+    {
+        printf("C[%u]: %f == %f\n", i, host_c.data[i], host_a.data[i] + host_b.data[i]);
+    }
     
 
     CheckMatrix(&answer, &host_c);
